@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,30 +22,47 @@ namespace tilitoli
     public partial class MainWindow : Window
     {
         Button[,] buttons = new Button[4, 4];
+        
         public MainWindow()
         {
             InitializeComponent();
-            int num = 0;
-            for (int i = 0; i < 4; i++)
+            InitializeTiles();
+            RandomizeTiles();
+        }
+
+        private void RandomizeTiles()
+        {
+            Random random = new Random();
+            RoutedEventArgs x = new();
+            for (int i = 0; i < 1000; i++)
             {
-                for (int j = 0; j < 4; j++)
+                Button_Click(grid_main.Children[random.Next(16)], x);
+            }
+        }
+
+        private void InitializeTiles()
+        {
+            int num = 0;
+            for (int i = 0; i < buttons.GetLength(0); i++)
+            {
+                for (int j = 0; j < buttons.GetLength(1); j++)
                 {
                     Button button = new Button();
                     button.Click += new RoutedEventHandler(Button_Click);
                     button.Foreground = Brushes.Red;
-                    Grid.SetColumn(button, i);
-                    Grid.SetRow(button, j);
-                    if (i == 3 && j == 3)
+                    Grid.SetColumn(button, j);
+                    Grid.SetRow(button, i);
+                    if (i == buttons.GetLength(0)-1 && j == buttons.GetLength(1)-1)
                     {
                         buttons[i, j] = button;
                         grid_main.Children.Add(button);
                         break;
                     }
                     ImageBrush brush = new ImageBrush();
-                    brush.ImageSource = new ImageSourceConverter().ConvertFromString($"pics/V{num+1}.jpg") as ImageSource;
+                    brush.ImageSource = new ImageSourceConverter().ConvertFromString($"pics/V{num + 1}.jpg") as ImageSource;
                     button.Background = brush;
                     button.Content = $"{num}";
-                    buttons[i, j] = button;
+                    buttons[j, i] = button;
                     grid_main.Children.Add(button);
                     num++;
                 }
@@ -79,7 +97,7 @@ namespace tilitoli
                                         button = empty;
                                         buttons[i, j] = empty;
                                         buttons[i + k, j] = save;
-                                        
+                                        return;
                                     }
                                 }
                         }
@@ -98,6 +116,7 @@ namespace tilitoli
                                     button = empty;
                                     buttons[i, j] = empty;
                                     buttons[i, j + l] = save;
+                                    return;
                                 }
                             }
                         }
